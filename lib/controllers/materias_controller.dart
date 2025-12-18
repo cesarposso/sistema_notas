@@ -18,4 +18,9 @@ class MateriasController {
   void agregarNota(Materia materia, double nota) {
     materia.agregarNota(nota);
   }
+
+  void eliminarNota(Materia materia, int index) {
+    materia.eliminarNotaEn(index);
+  }
 }
+

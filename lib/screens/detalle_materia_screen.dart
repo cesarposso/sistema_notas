@@ -56,6 +56,13 @@ class _DetalleMateriaScreenState extends State<DetalleMateriaScreen> {
     }
   }
 
+  void _eliminarNota(int index) {
+    setState(() {
+      widget.controller.eliminarNota(widget.materia, index);
+    });
+    widget.onChanged();
+  }
+
   @override
   void dispose() {
     _notaCtrl.dispose();
@@ -67,8 +74,34 @@ class _DetalleMateriaScreenState extends State<DetalleMateriaScreen> {
     final m = widget.materia;
 
     final promedioText = m.promedio.toStringAsFixed(2);
-    final estado = m.aprobada ? 'Aprobada' : 'Reprobada';
-    final estadoColor = m.aprobada ? Colors.green : Colors.red;
+
+    Widget resumen;
+    if (!m.tieneMinimoNotas) {
+      resumen = const Text(
+        'Registra mínimo 3 notas para ver el promedio final y el estado.',
+        style: TextStyle(color: Colors.orange),
+      );
+    } else {
+      final estado = m.aprobada ? 'Aprobada' : 'Reprobada';
+      final estadoColor = m.aprobada ? Colors.green : Colors.red;
+
+      resumen = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Promedio final: $promedioText'),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              const Text('Estado: '),
+              Text(
+                estado,
+                style: TextStyle(color: estadoColor, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text(m.nombre)),
@@ -80,26 +113,7 @@ class _DetalleMateriaScreenState extends State<DetalleMateriaScreen> {
             if (m.creditos != null) Text('Créditos: ${m.creditos}'),
             const SizedBox(height: 8),
 
-            Text('Promedio: $promedioText'),
-            const SizedBox(height: 4),
-
-            Row(
-              children: [
-                const Text('Estado: '),
-                Text(
-                  estado,
-                  style: TextStyle(color: estadoColor, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            if (!m.tieneMinimoNotas)
-              const Text(
-                'Faltan notas: debes registrar mínimo 3.',
-                style: TextStyle(color: Colors.orange),
-              ),
-
+            resumen,
             const Divider(height: 24),
 
             Row(
@@ -135,6 +149,10 @@ class _DetalleMateriaScreenState extends State<DetalleMateriaScreen> {
                 separatorBuilder: (_, __) => const Divider(height: 1),
                 itemBuilder: (_, i) => ListTile(
                   title: Text('Nota ${i + 1}: ${m.notas[i].toStringAsFixed(2)}'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _eliminarNota(i),
+                  ),
                 ),
               ),
             ),

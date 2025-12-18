@@ -16,6 +16,13 @@ class Materia {
     notas.add(nota);
   }
 
+  void eliminarNotaEn(int index) {
+    if (index < 0 || index >= notas.length) {
+      throw RangeError.index(index, notas, 'index');
+    }
+    notas.removeAt(index);
+  }
+
   bool get tieneMinimoNotas => notas.length >= 3;
 
   double get promedio {
@@ -26,3 +33,4 @@ class Materia {
 
   bool get aprobada => promedio >= 3.0;
 }
+
